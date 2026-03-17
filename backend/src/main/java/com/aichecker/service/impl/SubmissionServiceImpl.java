@@ -82,9 +82,20 @@ public class SubmissionServiceImpl implements SubmissionService {
         ensureStudent(student);
         Assignment assignment = assignmentService.getAssignmentById(assignmentId);
 
-        String extractedText = ocrService.extractText(imageFile);
-        List<AnswerInputDto> parsedAnswers = parseAnswersFromExtractedText(extractedText);
-        List<AnswerInputDto> merged = mergeAnswers(parsedAnswers, manualAnswers == null ? List.of() : manualAnswers);
+        List<AnswerInputDto> safeManualAnswers = manualAnswers == null ? List.of() : manualAnswers;
+
+        String extractedText = null;
+        List<AnswerInputDto> parsedAnswers = List.of();
+        try {
+            extractedText = ocrService.extractText(imageFile);
+            parsedAnswers = parseAnswersFromExtractedText(extractedText);
+        } catch (ApiException ocrException) {
+            if (safeManualAnswers.isEmpty()) {
+                throw ocrException;
+            }
+        }
+
+        List<AnswerInputDto> merged = mergeAnswers(parsedAnswers, safeManualAnswers);
         String savedPath = saveUploadedImage(imageFile, assignmentId, student.getId());
 
         return processSubmission(assignment, student, merged, extractedText, savedPath);
