@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Assignment Checker</title>
+    <script>
+      ;(() => {
+        const path = window.location.pathname
+        const isDist = path.includes('/dist/')
+        const isViteDev =
+          (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') &&
+          window.location.port === '5173'
+
+        if (isDist || isViteDev) return
+
+        const url = new URL(window.location.href)
+        let nextPath = url.pathname
+        if (nextPath.endsWith('/')) nextPath += 'index.html'
+        if (!nextPath.endsWith('/index.html')) return
+
+        nextPath = nextPath.replace(/\/index\.html$/, '/dist/index.html')
+        url.pathname = nextPath
+        window.location.replace(url.toString())
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root">Loading AI Assignment Checker...</div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
