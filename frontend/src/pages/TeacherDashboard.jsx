@@ -42,6 +42,8 @@ export default function TeacherDashboard() {
     numberOfQuestions: 3,
     answerKey: [emptyQuestion(0), emptyQuestion(1), emptyQuestion(2)]
   })
+  const [questionImageFile, setQuestionImageFile] = useState(null)
+  const [questionImageInputKey, setQuestionImageInputKey] = useState(0)
 
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -133,10 +135,22 @@ export default function TeacherDashboard() {
     setError('')
 
     try {
-      await apiClient.post('/api/assignments', {
+      const payload = {
         title: form.title,
         numberOfQuestions: form.numberOfQuestions,
         answerKey: form.answerKey
+      }
+      const formData = new FormData()
+      formData.append(
+        'request',
+        new Blob([JSON.stringify(payload)], { type: 'application/json' })
+      )
+      if (questionImageFile) {
+        formData.append('questionImage', questionImageFile)
+      }
+
+      await apiClient.post('/api/assignments/with-image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
 
       setForm({
@@ -144,6 +158,8 @@ export default function TeacherDashboard() {
         numberOfQuestions: 3,
         answerKey: [emptyQuestion(0), emptyQuestion(1), emptyQuestion(2)]
       })
+      setQuestionImageFile(null)
+      setQuestionImageInputKey((prev) => prev + 1)
 
       await loadInitialData()
     } catch (err) {
@@ -225,6 +241,19 @@ export default function TeacherDashboard() {
               ))}
             </div>
 
+            <label>
+              Question Set Image (Optional)
+              <input
+                key={questionImageInputKey}
+                type="file"
+                accept="image/*"
+                onChange={(event) => setQuestionImageFile(event.target.files?.[0] || null)}
+              />
+            </label>
+            <p className="muted-line">
+              Students will see this question image in their submission page.
+            </p>
+
             <button type="submit" className="btn" disabled={saving}>
               {saving ? 'Saving...' : 'Create Assignment'}
             </button>
@@ -294,7 +323,10 @@ export default function TeacherDashboard() {
                 onClick={() => selectAssignment(assignment.id)}
               >
                 <span>{assignment.title}</span>
-                <small>{assignment.numberOfQuestions} questions</small>
+                <small>
+                  {assignment.numberOfQuestions} questions
+                  {assignment.questionImageAvailable ? ' • Image attached' : ''}
+                </small>
               </button>
             ))}
           </div>

@@ -56,6 +56,9 @@ export default function StudentDashboard() {
               <h3>{assignment.title}</h3>
               <p>{assignment.numberOfQuestions} questions</p>
               <p>By {assignment.teacherName}</p>
+              {assignment.questionImageAvailable && (
+                <p className="muted-line">Question image attached</p>
+              )}
               <button
                 type="button"
                 className="btn"

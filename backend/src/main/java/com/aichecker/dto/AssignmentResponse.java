@@ -8,6 +8,7 @@ public record AssignmentResponse(
         Integer numberOfQuestions,
         Long teacherId,
         String teacherName,
+        boolean questionImageAvailable,
         Instant createdAt
 ) {
 }

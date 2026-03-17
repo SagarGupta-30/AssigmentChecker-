@@ -10,6 +10,7 @@ public record AssignmentDetailResponse(
         Long teacherId,
         String teacherName,
         Instant createdAt,
+        boolean questionImageAvailable,
         List<QuestionKeyDto> answerKey
 ) {
 }

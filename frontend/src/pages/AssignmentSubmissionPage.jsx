@@ -16,6 +16,9 @@ export default function AssignmentSubmissionPage() {
   const [assignment, setAssignment] = useState(null)
   const [answers, setAnswers] = useState([])
   const [imageFile, setImageFile] = useState(null)
+  const [questionImageUrl, setQuestionImageUrl] = useState('')
+  const [questionImageLoading, setQuestionImageLoading] = useState(false)
+  const [questionImageError, setQuestionImageError] = useState('')
   const [loading, setLoading] = useState(true)
   const [extracting, setExtracting] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -26,17 +29,56 @@ export default function AssignmentSubmissionPage() {
     loadAssignment()
   }, [assignmentId])
 
+  useEffect(
+    () => () => {
+      if (questionImageUrl) {
+        URL.revokeObjectURL(questionImageUrl)
+      }
+    },
+    [questionImageUrl]
+  )
+
   const loadAssignment = async () => {
     setLoading(true)
     setError('')
+    setQuestionImageError('')
     try {
       const response = await apiClient.get(`/api/assignments/${assignmentId}`)
       setAssignment(response.data)
       setAnswers(createEmptyAnswers(response.data.numberOfQuestions))
+
+      if (response.data.questionImageAvailable) {
+        await loadQuestionImage()
+      } else {
+        setQuestionImageUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev)
+          return ''
+        })
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to load assignment.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadQuestionImage = async () => {
+    setQuestionImageLoading(true)
+    setQuestionImageError('')
+
+    try {
+      const response = await apiClient.get(`/api/assignments/${assignmentId}/question-image`, {
+        responseType: 'blob'
+      })
+      const nextUrl = URL.createObjectURL(response.data)
+      setQuestionImageUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev)
+        return nextUrl
+      })
+    } catch (err) {
+      setQuestionImageError(err.response?.data?.message || 'Unable to load question image.')
+    } finally {
+      setQuestionImageLoading(false)
     }
   }
 
@@ -134,12 +176,27 @@ export default function AssignmentSubmissionPage() {
         <h2>{assignment?.title}</h2>
         <p className="muted-line">Total Questions: {assignment?.numberOfQuestions}</p>
 
+        {assignment?.questionImageAvailable && (
+          <div className="question-image-wrap">
+            <h3>Question Set Image</h3>
+            {questionImageLoading && <p className="muted-line">Loading question image...</p>}
+            {questionImageError && <p className="alert error">{questionImageError}</p>}
+            {!questionImageLoading && questionImageUrl && (
+              <img src={questionImageUrl} alt="Question set uploaded by teacher" className="question-image" />
+            )}
+          </div>
+        )}
+
         <div className="upload-row">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(event) => setImageFile(event.target.files?.[0] || null)}
-          />
+          <label className="upload-file-label">
+            Upload Answer Sheet (Optional)
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(event) => setImageFile(event.target.files?.[0] || null)}
+            />
+          </label>
+          {imageFile && <span className="muted-line">{imageFile.name}</span>}
           <button type="button" className="btn ghost" onClick={extractFromImage} disabled={extracting}>
             {extracting ? 'Extracting...' : 'Extract Answers from Image'}
           </button>

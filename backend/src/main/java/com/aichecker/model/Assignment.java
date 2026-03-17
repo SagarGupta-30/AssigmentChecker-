@@ -21,6 +21,9 @@ public class Assignment {
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String answerKey;
 
+    @Column(name = "question_image_path")
+    private String questionImagePath;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", nullable = false)
     private User teacher;
@@ -63,6 +66,14 @@ public class Assignment {
 
     public void setAnswerKey(String answerKey) {
         this.answerKey = answerKey;
+    }
+
+    public String getQuestionImagePath() {
+        return questionImagePath;
+    }
+
+    public void setQuestionImagePath(String questionImagePath) {
+        this.questionImagePath = questionImagePath;
     }
 
     public User getTeacher() {

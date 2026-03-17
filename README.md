@@ -2,6 +2,8 @@
 
 Full-stack platform where teachers create assignments and students submit answers. The system evaluates responses automatically (objective + subjective), supports OCR from uploaded images, and provides analytics dashboards.
 
+New: teachers can attach a question-set image to an assignment, and students can view that question image directly in their submission page.
+
 ## Stack
 
 - Backend: Spring Boot, Spring Security (JWT), Spring Data JPA
@@ -100,9 +102,11 @@ Services:
 
 ### Assignments
 - `POST /api/assignments` (Teacher)
+- `POST /api/assignments/with-image` (Teacher, multipart form)
 - `GET /api/assignments/my` (Teacher)
 - `GET /api/assignments/available` (Student/Teacher)
 - `GET /api/assignments/{assignmentId}`
+- `GET /api/assignments/{assignmentId}/question-image` (Student/Teacher, protected)
 
 ### Submissions
 - `POST /api/submissions/assignment/{assignmentId}`
