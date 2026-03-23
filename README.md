@@ -29,7 +29,7 @@ New: teachers can attach a question-set image to an assignment, and students can
 
 
 
-## Project Structure
+## Project Structure......
 
 
 
@@ -48,7 +48,7 @@ New: teachers can attach a question-set image to an assignment, and students can
 └── .github/workflows/ci.yml
 ```
 
-## Quick Start (Local Dev)
+## Quick Start (Local Dev).......
 
 ### 1) Run backend (dev profile, H2)
 
