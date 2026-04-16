@@ -4,7 +4,7 @@ Full-stack platform where teachers create assignments and students submit answer
 
 New: teachers can attach a question-set image to an assignment, and students can view that question image directly in their submission page.
 
-## Stack
+### Stack
 
 - Backend: Spring Boot, Spring Security (JWT), Spring Data JPA
 - Databases:
