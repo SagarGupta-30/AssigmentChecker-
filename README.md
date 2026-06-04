@@ -7,7 +7,7 @@ New: teachers can attach a question-set image to an assignment, and students can
 ### Stack _________________
 
 - Backend: Spring Boot, Spring Security (JWT), Spring Data JPA
-- Databases:
+- Databases ::::::::::::::::::::
   - Dev default: H2 (file-based)
   - Prod: MySQL 8 (profile-based)
 - Frontend: React (Vite), Axios, Recharts
